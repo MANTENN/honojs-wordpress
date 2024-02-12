@@ -2,13 +2,13 @@ import { Hono } from 'hono'
 import { renderer } from './renderer'
 import { Suspense } from 'hono/jsx'
 
-async function AsyncComponentTwo() {
+async function AsyncComponentTwo({ content = "Oops" }) {
   await new Promise((resolve) => setTimeout(resolve, 2000))
-  return <h1>Fake async hahaha</h1>
+  return <h1>{content}</h1>
 }
-async function AsyncComponent() {
+async function AsyncComponent({ content = "Oops2" }) {
   await new Promise((resolve) => setTimeout(resolve, 4000))
-  return <h1>Fake async hahaha</h1>
+  return <h1>{content}</h1>
 }
 
 
@@ -19,31 +19,25 @@ app.get('*', renderer)
 app.get('/', (c) => {
   return c.render(
     <>
-      <Suspense fallback={<h1>Out!</h1>}>
-        <AsyncComponentTwo />
+      <Suspense fallback={<h1>1</h1>}>
+        <AsyncComponentTwo content={"Out"} />
       </Suspense>
-      <Suspense fallback={<h1>Of!</h1>}>
-        <AsyncComponent />
+      <Suspense fallback={<h1>2</h1>}>
+        <AsyncComponent content={"Of"} />
       </Suspense>
-      <Suspense fallback={<h1>Order!</h1>}>
-        <AsyncComponentTwo />
+      <Suspense fallback={<h1>3</h1>}>
+        <AsyncComponentTwo content={"Order"} />
       </Suspense>
     </>
   )
 })
 
-app.get('/stream', async (c) => {
-  const body = await c.render(
+app.get('/stream', (c) => {
+  return c.render(
     <Suspense fallback={<h1>Partial Streaming</h1>}>
       <AsyncComponent />
     </Suspense>
-  ).body
-  return c.body(body, {
-    headers: {
-      'Content-Type': 'text/html; charset=UTF-8',
-      'Transfer-Encoding': 'chunked',
-    },
-  })
+  )
 })
 
 export default app
