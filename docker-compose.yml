@@ -1,0 +1,33 @@
+services:
+    wordpress_server:
+        depends_on:
+            - wordpress
+        image: nginx:alpine
+        restart: unless-stopped
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        links:
+            - wordpress
+        volumes_from:
+            - wordpress
+        ports:
+            - "8080:80"
+        networks:
+            - hono
+    wordpress:
+        image: wordpress:php8.3-fpm-alpine
+        restart: unless-stopped
+        environment:
+            WORDPRESS_DB_HOST: '${DATABASE_HOST}:${DB_PORT}'
+            WORDPRESS_DB_USER: '${DATABASE_USERNAME}'
+            WORDPRESS_DB_PASSWORD: '${DATABASE_PASSWORD}'
+            WORDPRESS_DB_NAME: '${DATABASE_DATABASE}'
+            WORDPRESS_DEBUG: '1'
+        volumes: ['./wordpress:/var/www/html', '.env:/var/www/.env']
+        networks:
+            - hono
+networks:
+    hono:
+        driver: bridge
+volumes:
+    wordpress:
