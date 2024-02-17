@@ -7,7 +7,10 @@
     "deploy": "$npm_execpath run build && wrangler pages deploy dist"
   },
   "dependencies": {
-    "hono": "^4.0.1"
+    "@planetscale/database": "^1.16.0",
+    "drizzle-orm": "^0.29.3",
+    "hono": "^4.0.1",
+    "mysql2": "^3.9.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240129.0",
